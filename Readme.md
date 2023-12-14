@@ -27,9 +27,9 @@ Esta implementación está construida en .NET y utiliza las siguientes tecnolog�
 
 ## HandBook
 
-1 - ![image](https://www.youtube.com/watch?v=sZ22YulJwao)
-2 - ![image](https://medium.com/techanic/the-math-in-public-key-cryptography-in-simple-words-with-examples-e3a18cb4fa85)
-3 - ![image](https://webauthn.io/)
-4 - ![image](https://webauthn.guide/)
-5 - ![image](https://github.com/passwordless-lib/fido2-net-lib)
-6 - ![image](https://github.com/damienbod/AspNetCoreIdentityFido2Mfa)
+1 - https://www.youtube.com/watch?v=sZ22YulJwao
+2 - https://medium.com/techanic/the-math-in-public-key-cryptography-in-simple-words-with-examples-e3a18cb4fa85
+3 - https://webauthn.io/
+4 - https://webauthn.guide/
+5 - https://github.com/passwordless-lib/fido2-net-lib
+6 - https://github.com/damienbod/AspNetCoreIdentityFido2Mfa
