@@ -1,4 +1,4 @@
-![image](https://github.com/Barrankus/passwordless-webauthn/assets/32332277/a430949a-ec28-4037-ad49-08bd169ca815)# Passwordless WebAuthn en .NET
+# Passwordless WebAuthn en .NET
 
 Este repositorio contiene una implementación de autenticación sin contraseña (passwordless) utilizando WebAuthn en una aplicación .NET.
 
