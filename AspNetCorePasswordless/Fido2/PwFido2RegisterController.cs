@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using static Fido2NetLib.Fido2;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using AspNetCorePasswordless.Fido2;
 
 namespace Fido2Identity;
 
@@ -152,6 +153,73 @@ public class PwFido2RegisterController : Controller
         {
             return Json(new CredentialMakeResult("error", FormatException(e), null));
         }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("/pwmakeResetCredential")]
+    public async Task<JsonResult> ResetAuthenticator([FromBody] ResetAuthenticatorRequest request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            // Don't reveal that the user does not exist
+            return Json(new CredentialMakeResult("error",
+                    $"Unable to load user.",
+                    null));
+        }
+        var result = await _userManager.VerifyUserTokenAsync(
+            user,
+            _userManager.Options.Tokens.PasswordResetTokenProvider,
+            UserManager<IdentityUser>.ResetPasswordTokenPurpose,
+            request.Code);
+        if (result)
+        {
+            await _fido2Store.RemoveCredentialsByUserNameAsync(request.Email);
+            // Regenerar credencial de Fido?
+            var success = await CreateUserCredential(user, request.AttestationResponse);
+            return Json(success);
+        }
+
+        return Json(new CredentialMakeResult("error",
+                    $"Unable to load user.",
+                    null));
+    }
+
+    private async Task<CredentialMakeResult?> CreateUserCredential(IdentityUser user, AuthenticatorAttestationRawResponse attestationResponse)
+    {
+        var jsonOptions = HttpContext.Session.GetString("fido2.attestationOptions");
+        var options = CredentialCreateOptions.FromJson(jsonOptions);
+
+        // 2. Create callback so that lib can verify credential id is unique to this user
+        IsCredentialIdUniqueToUserAsyncDelegate callback = async (args, cancellationToken) =>
+        {
+            var users = await _fido2Store.GetUsersByCredentialIdAsync(args.CredentialId);
+            if (users.Count > 0) return false;
+
+            return true;
+        };
+
+        // 2. Verify and make the credentials
+        var success = await _lib.MakeNewCredentialAsync(attestationResponse, options, callback);
+        if (success.Result != null)
+        {
+            // 3. Store the credentials in db
+            await _fido2Store.AddCredentialToUserAsync(options.User, new FidoStoredCredential
+            {
+                UserName = options.User.Name,
+                Descriptor = new PublicKeyCredentialDescriptor(success.Result.CredentialId),
+                PublicKey = success.Result.PublicKey,
+                UserHandle = success.Result.User.Id,
+                SignatureCounter = success.Result.Counter,
+                CredType = success.Result.CredType,
+                RegDate = DateTime.Now,
+                //AaGuid = success.Result.AaGuid // version 4
+                AaGuid = success.Result.Aaguid
+            });
+        }
+
+        return success;
     }
 
     private async Task<IdentityUser?> CreateOrFindUser(string userEmail)
