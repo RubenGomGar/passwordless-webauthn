@@ -23,7 +23,7 @@ Console.WriteLine($"Clave pública (n, e): ({n} , {e})");
 Console.WriteLine($"Clave privada (n, d): ({n} , {d})");
 
 // Mensaje a encriptar
-string message = "HELLO Dotnetmadrid 2023";
+string message = "HELLO NetCoreConf 2024";
 Console.WriteLine("Mensaje original: " + message);
 
 // Convertir el mensaje a números ASCII
