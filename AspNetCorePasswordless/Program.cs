@@ -1,8 +1,12 @@
 using AspNetCorePasswordless.Infrastructure.Data;
+using AspNetCorePasswordless.Services;
 using Fido2Identity;
 using Fido2NetLib;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
@@ -20,6 +24,9 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
 });
 
+builder.Services.Configure<SendGridOptions>(builder.Configuration.GetSection(SendGridOptions.SectionName));
+builder.Services.AddScoped<IEmailSendService, EmailSendService>();
+builder.Services.AddSingleton<IEmailSender, SendGridEmailSender>();
 builder.Services.AddControllers();
 
 builder.Services.AddRazorPages();

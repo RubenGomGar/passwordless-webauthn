@@ -1,0 +1,30 @@
+﻿@page
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string? GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(this.HttpContext).RequestToken;
+    }
+}
+@model LostAuthenticator
+
+@{
+    ViewData["Title"] = "Lost Authenticator";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form method="post">
+                <div class="form-group">
+                    <input asp-for="Input.Email" placeholder="Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-primary--no-margin btn-block">Submit</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

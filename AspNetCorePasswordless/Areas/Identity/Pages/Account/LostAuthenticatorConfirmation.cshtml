@@ -1,0 +1,22 @@
+﻿@page
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string? GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(this.HttpContext).RequestToken;
+    }
+}
+@model LostAuthenticator
+
+@{
+    ViewData["Title"] = "Lost Authenticator";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col">
+        <section>
+            Check your email inbox for details on how to restore your authenticator
+        </section>
+    </div>
+</div>

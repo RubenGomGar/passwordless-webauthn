@@ -1,0 +1,45 @@
+﻿@page
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    public string? GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(this.HttpContext).RequestToken;
+    }
+}
+@model ResetAuthenticator
+
+@{
+    ViewData["Title"] = "Reset Authenticator";
+}
+
+<div class="login-box">
+    <form action="/mfa" method="post" id="register">
+        <input type="hidden" id="RequestVerificationToken" name="RequestVerificationToken" value="@GetAntiXsrfRequestToken()">
+        <div class="form-group">
+            <input type="hidden" id="BasePath" name="BasePath" value="@Url.Content("~")">
+            <label name="username">Email</label>
+            <input name="username" required class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label name="username">Code</label>
+            <input  name="code" class="form-control" value="@Model.Input.Code">
+        </div>
+
+        <div class="form-group">
+            <label name="displayName">Display name</label>
+            <input name="displayName" class="form-control" />
+        </div>
+
+        <div class="field">
+            <div class="control">
+                <button class="btn btn-primary">Reset</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+</div>
+
+<script src="~/js/helpers.js"></script>
+<script src="~/js/instant.js"></script>
+<script src="~/js/passwordless.reset.js"></script>
